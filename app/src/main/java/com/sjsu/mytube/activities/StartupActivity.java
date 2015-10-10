@@ -1,8 +1,8 @@
 package com.sjsu.mytube.activities;
 
 import android.content.Intent;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -15,18 +15,38 @@ public class StartupActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
+
         //check for upgrade stage
         checkForUpgrade();
         //check for UserPref init page
         checkForUserPrefSettings();
 
-        // determine if we need to handle main page customized for the user.
-        // For example showing guidelines if its a first time user etc.
+        // if logged in
+        if(true) {
+            Intent i = new Intent(this, MainActivity.class);
+            i.putExtra("startUpMode", "normal");
+            Log.d("DEBUG", "Starting up in active mode");
+            startActivity(i);
+            // else go to LoginActivity
+        } else{
+            Intent i = new Intent(this, LoginActivity.class);
+            Log.d("DEBUG", "Starting up in login mode");
+            startActivity(i);
+        }
+    }
 
-        Intent i = new Intent(this, LoginActivity.class);
-        i.putExtra("startUpMode", "normal");
-        Log.d("DEBUG", "Starting up in normal mode");
-        startActivity(i);
+    /**
+     *
+     */
+    private void checkForUpgrade() {
+
+    }
+
+    /**
+     *
+     */
+    private void checkForUserPrefSettings() {
+
     }
 
     @Override
@@ -35,15 +55,6 @@ public class StartupActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_startup, menu);
         return true;
     }
-
-    private void checkForUpgrade() {
-
-    }
-
-    private void checkForUserPrefSettings() {
-
-    }
-
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -56,7 +67,6 @@ public class StartupActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
             return true;
         }
-
         return super.onOptionsItemSelected(item);
     }
 }

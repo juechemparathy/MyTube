@@ -1,25 +1,21 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <string name="app_name">MyTube</string>
 
-    <string name="hello_world">Hello world!</string>
+    <string name="app_name">|myTube|</string>
+    <string name="login">Login</string>
     <string name="action_settings">Settings</string>
-    <string name="title_activity_startup">StartupActivity</string>
-    <string name="title_activity_login">LoginActivity</string>
-    <string name="signing_in">Signing In</string>
-    <string name="sign_out">Sign Out</string>
-    <string name="disconnect">Disconnect</string>
-    <string name="signed_in_fmt">Signed in as: %s</string>
-    <string name="signed_in_err">"Error: please check logs."</string>
-    <string name="error_null_person">
-        Error: Plus.PeopleApi.getCurrentPerson returned null. Ensure that the Google+ API is
-        enabled for your project, you have a properly configured google-services.json file
-        and that your device has an internet connection.
-    </string>
-    <string name="signed_out">Signed out</string>
-
-
-
+    <string name="search">Search</string>
+    <string name="fragment_name">FragmentName</string>
     <string name="drawer_open">Open</string>
     <string name="drawer_close">Close</string>
+    <string name="title_activity_some">SomeActivity</string>
+    <string name="title_activity_startup">StartingUp</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="hello_favorite_fragment">Hello favorite fragment</string>
+    <string name="hello_search_fragment">Hello search fragment</string>
+    <string name="hello_playlist_fragment">Hello playlist fragment</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="hello_world">Hello world!</string>
+    <string name="someMenu">SomeMenu</string>
 
 </resources>

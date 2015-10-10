@@ -1,4 +1,4 @@
-package com.sjsu.mytube;
+package com.yahoo.mytube;
 
 import android.app.Application;
 import android.test.ApplicationTestCase;

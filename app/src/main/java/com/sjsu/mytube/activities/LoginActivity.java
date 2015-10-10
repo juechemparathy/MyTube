@@ -1,82 +1,105 @@
 package com.sjsu.mytube.activities;
 
 import android.content.Intent;
-import android.content.IntentSender;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.TextView;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Toast;
 
-import com.google.android.gms.common.ConnectionResult;
-import com.google.android.gms.common.Scopes;
-import com.google.android.gms.common.SignInButton;
-import com.google.android.gms.common.api.GoogleApiClient;
-import com.google.android.gms.common.api.Scope;
-import com.google.android.gms.plus.Plus;
 import com.sjsu.mytube.R;
 
-public class LoginActivity extends AppCompatActivity implements
-        GoogleApiClient.ConnectionCallbacks,
-        GoogleApiClient.OnConnectionFailedListener,
-        View.OnClickListener {
 
-    private static final String TAG = "LoginActivity";
+public class LoginActivity extends AppCompatActivity {
 
-    /* Request code used to invoke sign in user interactions. */
-    private static final int RC_SIGN_IN = 0;
+    private EditText et_username;
+    private EditText et_password;
+    private EditText et_email;
+    private EditText et_phonenumber;
+    private Button bt_login;
+    boolean isUserLoggedIn;
+    String errorMessage;
 
-    /* Client used to interact with Google APIs. */
-    private GoogleApiClient mGoogleApiClient;
-
-    /* Is there a ConnectionResult resolution in progress? */
-    private boolean mIsResolving = false;
-
-    /* Should we automatically resolve ConnectionResults when possible? */
-    private boolean mShouldResolve = false;
-
-    private TextView mStatus;
-
-
-    @Override
-    public void onClick(View v) {
-        if (v.getId() == R.id.sign_in_button) {
-            onSignInClicked();
-        }
-    }
-
-    private void onSignInClicked() {
-        // User clicked the sign-in button, so begin the sign-in process and automatically
-        // attempt to resolve any errors that occur.
-        mShouldResolve = true;
-        mGoogleApiClient.connect();
-        // Show a message to the user that we are signing in.
-        mStatus =  (TextView)findViewById(R.id.status);
-        mStatus.setText(R.string.signing_in);
-
-        // Navigate to main page
-        Intent i = new Intent(LoginActivity.this, MainActivity.class);
-        startActivity(i);
-    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+//        ParseUser.logOut();
+    }
 
-        findViewById(R.id.sign_in_button).setOnClickListener(this);
-        ((SignInButton)findViewById(R.id.sign_in_button)).setSize(SignInButton.SIZE_WIDE);
 
-        // Build GoogleApiClient with access to basic profile
-        mGoogleApiClient = new GoogleApiClient.Builder(this)
-                .addConnectionCallbacks(this)
-                .addOnConnectionFailedListener(this)
-                .addApi(Plus.API)
-                .addScope(new Scope(Scopes.PROFILE))
-                .build();
+    public void onLogin(View view) {
+
+        errorMessage = null;
+        isUserLoggedIn = false;
+
+        et_username = (EditText) findViewById(R.id.et_username);
+        et_password = (EditText) findViewById(R.id.et_password);
+
+        et_email = (EditText) findViewById(R.id.et_email);
+        et_phonenumber = (EditText) findViewById(R.id.et_phone);
+
+        if (et_email.getText().toString().length() == 0 || et_phonenumber.getText().length() == 0) {
+            //LOGIN
+//            ParseUser.logInInBackground(et_username.getText().toString(), et_password.getText().toString(), new LogInCallback() {
+//                public void done(ParseUser user, ParseException e) {
+//                    if (user != null) {
+//                        // Hooray! The user is logged in.
+//                        callMainActivity();
+//                    } else {
+//                        errorMessage = "Invalid username/password";
+//                        // Signup failed. Look at the ParseException to see what happened.
+//                    }
+//                }
+//            });
+        } else {
+
+            //SIGN-UP
+            // Create the ParseUser
+//            ParseUser user = new ParseUser();
+//            // Set core properties
+//            user.setUsername(et_username.getText().toString());
+//            user.setPassword(et_password.getText().toString());
+//            user.setEmail(et_email.getText().toString());
+//            // Set custom properties
+//            user.put("phone", Integer.parseInt(et_phonenumber.getText().toString()));
+//            // Invoke signUpInBackground
+//            user.signUpInBackground(new SignUpCallback() {
+//                public void done(ParseException e) {
+//                    if (e == null) {
+//
+//                        isUserLoggedIn = true;
+//
+//                        // Hooray! Let them use the app now.
+//                    } else {
+//                        errorMessage = e.getMessage();
+//                        // Sign up didn't succeed. Look at the ParseException
+//                        // to figure out what went wrong
+//                    }
+//                }
+//            });
+        }
+
+        if (isUserLoggedIn) {
+            callMainActivity();
+        }
+
+        if (errorMessage != null) {
+            Toast.makeText(this, errorMessage, Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    private void callMainActivity() {
+        Intent i = new Intent(this, com.sjsu.mytube.activities.MainActivity.class);
+        i.putExtra("startUpMode", "normal");
+        Log.d("DEBUG", "Starting up in normal mode");
+        startActivity(i);
     }
 
     @Override
@@ -101,74 +124,15 @@ public class LoginActivity extends AppCompatActivity implements
         return super.onOptionsItemSelected(item);
     }
 
+
+//    //This is a work around for using back button after logout.
+//    //Need to work on aexception thrown at this stage - harmless but need to fix.
     @Override
-    protected void onStart() {
-        super.onStart();
-        Log.d(TAG, "onStart - Logging in");
-        mGoogleApiClient.connect();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop - Logging out");
-        mGoogleApiClient.disconnect();
-    }
-
-    @Override
-    public void onConnected(Bundle bundle) {
-
-    }
-
-    @Override
-    public void onConnectionSuspended(int i) {
-
-    }
-
-    @Override
-    public void onConnectionFailed(ConnectionResult connectionResult) {
-        // Could not connect to Google Play Services.  The user needs to select an account,
-        // grant permissions or resolve an error in order to sign in. Refer to the javadoc for
-        // ConnectionResult to see possible error codes.
-        Log.d(TAG, "onConnectionFailed:" + connectionResult);
-
-        if (!mIsResolving && mShouldResolve) {
-            if (connectionResult.hasResolution()) {
-                try {
-                    connectionResult.startResolutionForResult(this, RC_SIGN_IN);
-                    mIsResolving = true;
-                } catch (IntentSender.SendIntentException e) {
-                    Log.e(TAG, "Could not resolve ConnectionResult.", e);
-                    mIsResolving = false;
-                    mGoogleApiClient.connect();
-                }
-            } else {
-                // Could not resolve the connection result, show the user an
-                // error dialog.
-//                showErrorDialog(connectionResult);
-                Toast.makeText(this,connectionResult +"",Toast.LENGTH_SHORT).show();
-            }
-        } else {
-            // Show the signed-out UI
-//            showSignedOutUI();
-            Toast.makeText(this,"Signin out",Toast.LENGTH_SHORT).show();
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        if (keyCode == KeyEvent.KEYCODE_BACK) {
+            moveTaskToBack(true);
+            return true;
         }
-    }
-
-
-    @Override
-    public void onActivityResult(int requestCode, int resultCode, Intent data) {
-        super.onActivityResult(requestCode, resultCode, data);
-        Log.d(TAG, "onActivityResult:" + requestCode + ":" + resultCode + ":" + data);
-
-        if (requestCode == RC_SIGN_IN) {
-            // If the error resolution was not successful we should not resolve further.
-            if (resultCode != RESULT_OK) {
-                mShouldResolve = false;
-            }
-
-            mIsResolving = false;
-            mGoogleApiClient.connect();
-        }
+        return super.onKeyDown(keyCode, event);
     }
 }
