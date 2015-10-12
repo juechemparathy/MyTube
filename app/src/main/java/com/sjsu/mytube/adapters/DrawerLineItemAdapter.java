@@ -64,12 +64,13 @@ public class DrawerLineItemAdapter extends RecyclerView.Adapter<DrawerLineItemAd
 
         @Override
         public void onClick(View view) {
-            int position = getPosition();
+            int position = getAdapterPosition();
             //Handle this more elegantly
-            if(position ==6){
+            if(position == 3){
                 Intent i = new Intent(context, LoginActivity.class);
-                 //Was trying to remove the call stack on logout.- Ended up back button with ablack screen.
-//                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                i.putExtra("action", "logout");
+                // Was trying to remove the call stack on logout.
+                i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 context.startActivity(i);
             }
             else {

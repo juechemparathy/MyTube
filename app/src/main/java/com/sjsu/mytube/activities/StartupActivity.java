@@ -6,33 +6,46 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
+import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.api.GoogleApiClient;
+import com.google.android.gms.plus.Plus;
 import com.sjsu.mytube.R;
 
-public class StartupActivity extends AppCompatActivity {
+public class StartupActivity extends AppCompatActivity implements View.OnClickListener,
+        GoogleApiClient.ConnectionCallbacks, GoogleApiClient.OnConnectionFailedListener {
+    GoogleApiClient mGoogleApiClient;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_startup);
 
+        mGoogleApiClient = new GoogleApiClient.Builder(this)
+                .addConnectionCallbacks(this)
+                .addOnConnectionFailedListener(this).addApi(Plus.API)
+                .addScope(Plus.SCOPE_PLUS_LOGIN).build();
+
         //check for upgrade stage
         checkForUpgrade();
         //check for UserPref init page
         checkForUserPrefSettings();
 
+
         // if logged in
-        if(true) {
+        if(mGoogleApiClient.isConnected()) {
             Intent i = new Intent(this, MainActivity.class);
             i.putExtra("startUpMode", "normal");
             Log.d("DEBUG", "Starting up in active mode");
             startActivity(i);
-            // else go to LoginActivity
         } else{
             Intent i = new Intent(this, LoginActivity.class);
             Log.d("DEBUG", "Starting up in login mode");
             startActivity(i);
         }
+
+
     }
 
     /**
@@ -68,5 +81,25 @@ public class StartupActivity extends AppCompatActivity {
             return true;
         }
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onConnected(Bundle bundle) {
+
+    }
+
+    @Override
+    public void onConnectionSuspended(int i) {
+
+    }
+
+    @Override
+    public void onClick(View v) {
+
+    }
+
+    @Override
+    public void onConnectionFailed(ConnectionResult connectionResult) {
+
     }
 }
