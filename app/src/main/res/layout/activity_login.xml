@@ -1,25 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
-    android:layout_width="match_parent"
+    android:layout_width="fill_parent"
     android:layout_height="match_parent"
     android:gravity="center"
     android:orientation="vertical"
-    android:padding="15dp"
-    tools:context=".AndroidGooglePlusExample" >
-
+    tools:context=".LoginActivity"
+    android:background="@color/primary"
+    android:weightSum="1">
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="20dp"
+        android:background="@drawable/mytube_icon"
+        android:layout_weight="0.45" />
+    <ImageView
+        android:layout_width="match_parent"
+        android:layout_height="340dp"
+        android:background="@drawable/signin_image" />
     <com.google.android.gms.common.SignInButton
         android:id="@+id/sign_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content" />
+        android:layout_width="148dp"
+        android:layout_height="wrap_content"
+        android:layout_weight="0.03"
+        android:paddingTop="20dp"
+        android:text="Login to |myTube|"
+         />
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceMedium"
-        android:text=""
         android:id="@+id/tvLoginStatus"
         android:layout_gravity="center_horizontal" />
-
 
 </LinearLayout>
