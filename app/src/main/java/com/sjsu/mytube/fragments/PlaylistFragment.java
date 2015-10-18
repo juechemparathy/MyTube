@@ -11,7 +11,7 @@ import android.widget.TextView;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.adapters.LineItemAdapter;
-import com.sjsu.mytube.data.TestVideoData;
+import com.sjsu.mytube.helpers.YoutubeHelper;
 import com.sjsu.mytube.models.VideoInfo;
 import com.sjsu.mytube.models.VideoLineItem;
 
@@ -27,7 +27,6 @@ public class PlaylistFragment extends Fragment {
     private TextView tvPagePosition;
     private RecyclerView recyclerView;
     private LineItemAdapter lineItemAdapter;
-    private List<VideoInfo> videoInfoList = TestVideoData.getNewInstance().getVideoList();
     List<VideoLineItem> videoLineItems = new ArrayList<VideoLineItem>();
 
 
@@ -62,23 +61,42 @@ public class PlaylistFragment extends Fragment {
 //          tvPagePosition.setText("Page " +bundle.getInt("position"));
         }
 
-        if(videoInfoList != null) {
-            for (VideoInfo videoInfo : videoInfoList) {
-                VideoLineItem videoLineItem = new VideoLineItem();
-                videoLineItem.setVideoId( videoInfo.getVideoId() );
-                videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
-                videoLineItem.setTitle(videoInfo.getTitle());
-                //videoLineItem.setOwner(videoInfo.getOwner());
-                videoLineItem.setPubdate(videoInfo.getPublishDate());
-                videoLineItem.setViewCount( videoInfo.getViewCount() );
-                videoLineItems.add(videoLineItem);
-            }
-        }
-
         recyclerView = (RecyclerView) layout.findViewById(R.id.videolist_rcview);
         lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems);
         recyclerView.setAdapter(lineItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
+
+        synchronized( this ) {
+
+            Thread thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    List<VideoInfo> videoInfoList = YoutubeHelper.shared().GetPlaylistVideosFavorite();
+
+                    videoLineItems.clear();
+
+                    if (videoInfoList != null) {
+                        for (VideoInfo videoInfo : videoInfoList) {
+                            VideoLineItem videoLineItem = new VideoLineItem();
+                            videoLineItem.setVideoId(videoInfo.getVideoId());
+                            videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
+                            videoLineItem.setTitle(videoInfo.getTitle());
+                            // videoLineItem.setOwner(videoInfo.getOwner());
+                            videoLineItem.setPubdate(videoInfo.getPublishDate());
+                            videoLineItem.setViewCount(videoInfo.getViewCount());
+                            videoLineItems.add(videoLineItem);
+                        }
+                    }
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lineItemAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            });
+            thread.start();
+        }
         return layout;
     }
 }

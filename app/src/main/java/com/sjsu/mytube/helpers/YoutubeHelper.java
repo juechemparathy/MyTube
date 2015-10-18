@@ -10,6 +10,7 @@ import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
 import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
@@ -30,9 +31,9 @@ public class YoutubeHelper {
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final GsonFactory JSON_FACTORY = new GsonFactory();
-    private static final String API_KEY = "AIzaSyCZ5AGF_E1RfPhsX-3tX6HZKj-Zgt7JKuY"; // "AIzaSyCtLOXBs3kGN8JPJLRIYvYr4Ri46yAL3xU";
+    private static final String API_KEY = "AIzaSyCZ5AGF_E1RfPhsX-3tX6HZKj-Zgt7JKuY"; //"AIzaSyCtLOXBs3kGN8JPJLRIYvYr4Ri46yAL3xU";//"AIzaSyAUURrcezOMraClM2YzAvODYyU51HFbAi8" ;
     private static final long MAX_VIDEOS_RETURNED = 25;
-    private static final String STAR_PLAYLIST_ID = "--PLAYLIST-ID-GOES-HERE";
+    private static final String FAVORITE_PLAYLIST_ID = "PLJoVZAx98v1ySiv4RkB68TmqpZlT-eRYl";
 
     private YouTube youtube;
 
@@ -66,8 +67,7 @@ public class YoutubeHelper {
         return shared;
     }
 
-    public List<VideoInfo> Search( final String query )
-    {
+    public List<VideoInfo> Search( final String query ) {
         List<VideoInfo> result = new ArrayList<VideoInfo>();
 
         if ( youtube == null ) {
@@ -128,6 +128,66 @@ public class YoutubeHelper {
         return result;
     }
 
+    public List<VideoInfo> GetPlaylistVideos( String playlistId ) {
+        List<VideoInfo> result = new ArrayList<VideoInfo>();
+
+        if ( youtube == null ) {
+            return result;
+        }
+
+        try {
+            YouTube.PlaylistItems.List playlistCommand = youtube.playlistItems().list( "playlistId" );
+            playlistCommand.setKey(API_KEY);
+            playlistCommand.setFields("items(id,snippet/resourceId/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/default/url)");
+            playlistCommand.setMaxResults(MAX_VIDEOS_RETURNED);
+            playlistCommand.setPlaylistId(playlistId);
+
+            PlaylistItemListResponse searchResponse = playlistCommand.execute();
+
+            List<PlaylistItem> searchResultList = searchResponse.getItems();
+
+            if ( searchResultList != null ) {
+                for ( int i = 0; i < searchResultList.size(); i++ ) {
+                    PlaylistItem searchResult = searchResultList.get(i);
+                    PlaylistItemSnippet searchResultSnippet = searchResult.getSnippet();
+
+                    String videoId = searchResult.getSnippet().getResourceId().getVideoId();
+
+                    YouTube.Videos.List videoInfoCommand = youtube.videos().list("snippet, statistics").setId(videoId);
+                    videoInfoCommand.setKey(API_KEY);
+                    VideoListResponse videoInfoHelperResponse = videoInfoCommand.execute();
+
+                    List<Video> videoInfoResultList = videoInfoHelperResponse.getItems();
+
+                    BigInteger viewCount = BigInteger.ZERO;
+                    if ( videoInfoResultList != null ) {
+                        Video video = videoInfoResultList.get(0);
+                        viewCount = video.getStatistics().getViewCount();
+                    }
+
+                    VideoInfo videoInfo = new VideoInfo(
+                            videoId,
+                            searchResultSnippet.getTitle().toString(),
+                            searchResultSnippet.getPublishedAt(),
+                            searchResultSnippet.getThumbnails().getDefault().getUrl(),
+                            viewCount
+                    );
+
+                    result.add( videoInfo );
+
+                }
+            }
+        } catch ( GoogleJsonResponseException exception ) {
+            Log.e( "Youtubehelper", "Search", exception );
+        } catch ( IOException exception ) {
+            Log.e( "Youtubehelper", "Search", exception );
+        } catch ( Exception exception ) {
+            Log.e( "Youtubehelper", "Search", exception );
+        }
+
+        return result;
+    }
+
     public boolean PlaylistInsert( final String videoId, final String playlistId ) {
 
         if ( youtube == null ) {
@@ -139,15 +199,15 @@ public class YoutubeHelper {
         resourceId.setVideoId(videoId);
 
         PlaylistItemSnippet playlistItemSnippet = new PlaylistItemSnippet();
-        playlistItemSnippet.setPlaylistId(playlistId);
+        playlistItemSnippet.setPlaylistId(FAVORITE_PLAYLIST_ID);
         playlistItemSnippet.setResourceId(resourceId);
 
         PlaylistItem playlistItem = new PlaylistItem();
         playlistItem.setSnippet(playlistItemSnippet);
 
         try {
-            YouTube.PlaylistItems.Insert playlistItemsInsertCommand = youtube.playlistItems().insert("snippet,contentDetails", playlistItem );
-            playlistItemsInsertCommand.setKey( API_KEY );
+            YouTube.PlaylistItems.Insert playlistItemsInsertCommand = youtube.playlistItems().insert("snippet,contentDetails", playlistItem);
+            playlistItemsInsertCommand.setKey(API_KEY);
             PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
 
             if ( returnedPlaylistItem != null ) {
@@ -159,7 +219,11 @@ public class YoutubeHelper {
         return false;
     }
 
-    public  boolean PlaylistInsertStarred( final String videoId ) {
-        return PlaylistInsert( videoId, STAR_PLAYLIST_ID );
+    public  boolean PlaylistInsertFavorite(final String videoId) {
+        return PlaylistInsert( videoId, FAVORITE_PLAYLIST_ID);
+    }
+
+    public List<VideoInfo> GetPlaylistVideosFavorite() {
+        return GetPlaylistVideos(FAVORITE_PLAYLIST_ID);
     }
 }

@@ -100,7 +100,7 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
                     final int position = holder.getPosition();
                     final VideoLineItem current = data.get(position);
                     final String videoId = current.getVideoId();
-                    boolean result = YoutubeHelper.shared().PlaylistInsertStarred( videoId );
+                    boolean result = YoutubeHelper.shared().PlaylistInsertFavorite(videoId);
                 }
             } );
             thread.start();
