@@ -33,7 +33,10 @@ public class YoutubeHelper {
     private static final GsonFactory JSON_FACTORY = new GsonFactory();
     private static final String API_KEY = "AIzaSyCZ5AGF_E1RfPhsX-3tX6HZKj-Zgt7JKuY"; //"AIzaSyCtLOXBs3kGN8JPJLRIYvYr4Ri46yAL3xU";//"AIzaSyAUURrcezOMraClM2YzAvODYyU51HFbAi8" ;
     private static final long MAX_VIDEOS_RETURNED = 25;
-    private static final String FAVORITE_PLAYLIST_ID = "PLJoVZAx98v1ySiv4RkB68TmqpZlT-eRYl";
+    private static final long MAX_PLAYLISTS_RETURNED = 1;
+    private static final String FAVORITE_PLAYLIST_NAME = "SJSU-CMP-277";
+
+    private static String favoritePlaylistId;
 
     private YouTube youtube;
 
@@ -49,6 +52,8 @@ public class YoutubeHelper {
         );
         builder.setApplicationName("MyTube");
         youtube = builder.build();
+
+        favoritePlaylistId = null;
     }
 
     public static YoutubeHelper shared() {
@@ -131,12 +136,12 @@ public class YoutubeHelper {
     public List<VideoInfo> GetPlaylistVideos( String playlistId ) {
         List<VideoInfo> result = new ArrayList<VideoInfo>();
 
-        if ( youtube == null ) {
+        if ( youtube == null || playlistId == null ) {
             return result;
         }
 
         try {
-            YouTube.PlaylistItems.List playlistCommand = youtube.playlistItems().list( "playlistId" );
+            YouTube.PlaylistItems.List playlistCommand = youtube.playlistItems().list( "id,snippet" );
             playlistCommand.setKey(API_KEY);
             playlistCommand.setFields("items(id,snippet/resourceId/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/default/url)");
             playlistCommand.setMaxResults(MAX_VIDEOS_RETURNED);
@@ -190,7 +195,7 @@ public class YoutubeHelper {
 
     public boolean PlaylistInsert( final String videoId, final String playlistId ) {
 
-        if ( youtube == null ) {
+        if ( youtube == null || videoId == null || playlistId == null ) {
             return false;
         }
 
@@ -199,7 +204,7 @@ public class YoutubeHelper {
         resourceId.setVideoId(videoId);
 
         PlaylistItemSnippet playlistItemSnippet = new PlaylistItemSnippet();
-        playlistItemSnippet.setPlaylistId(FAVORITE_PLAYLIST_ID);
+        playlistItemSnippet.setPlaylistId(playlistId);
         playlistItemSnippet.setResourceId(resourceId);
 
         PlaylistItem playlistItem = new PlaylistItem();
@@ -219,11 +224,57 @@ public class YoutubeHelper {
         return false;
     }
 
+    private String GetPlaylistId( String playlistName ) {
+        String playlistId = null;
+
+        if ( youtube == null || playlistName == null ) {
+            return playlistId;
+        }
+
+        try {
+            YouTube.Search.List searchCommand = youtube.search().list( "id,snippet" );
+            searchCommand.setKey(API_KEY);
+            searchCommand.setQ(playlistName);
+            searchCommand.setType("playlist");
+            searchCommand.setFields("items(id/playlistId)");
+            searchCommand.setMaxResults(MAX_PLAYLISTS_RETURNED);
+
+            SearchListResponse searchResponse = searchCommand.execute();
+
+            List<SearchResult> searchResultList = searchResponse.getItems();
+
+            if ( searchResultList != null ) {
+                for ( int i = 0; i < searchResultList.size(); i++ ) {
+                    SearchResult searchResult = searchResultList.get(i);
+                    playlistId = searchResult.getId().getPlaylistId();
+                }
+            }
+        } catch ( GoogleJsonResponseException exception ) {
+            Log.e( "Youtubehelper", "GetPlaylistId", exception );
+        } catch ( IOException exception ) {
+            Log.e( "Youtubehelper", "GetPlaylistId", exception );
+        } catch ( Exception exception ) {
+            Log.e( "Youtubehelper", "GetPlaylistId", exception );
+        }
+
+        return playlistId;
+    }
+
+    private String GetPlaylistIdFavorite() {
+        return GetPlaylistId( FAVORITE_PLAYLIST_NAME );
+    }
+
     public  boolean PlaylistInsertFavorite(final String videoId) {
-        return PlaylistInsert( videoId, FAVORITE_PLAYLIST_ID);
+        if ( favoritePlaylistId == null ) {
+            favoritePlaylistId = GetPlaylistIdFavorite();
+        }
+        return PlaylistInsert( videoId, favoritePlaylistId);
     }
 
     public List<VideoInfo> GetPlaylistVideosFavorite() {
-        return GetPlaylistVideos(FAVORITE_PLAYLIST_ID);
+        if ( favoritePlaylistId == null ) {
+            favoritePlaylistId = GetPlaylistIdFavorite();
+        }
+        return GetPlaylistVideos(favoritePlaylistId);
     }
 }
