@@ -10,7 +10,13 @@
     <android.support.v7.widget.RecyclerView
         android:id="@+id/videolist_rcview"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="543dp"
         android:background="@color/background_floating_material_light">
     </android.support.v7.widget.RecyclerView>
+
+    <SearchView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/searchView"
+        android:layout_gravity="center_horizontal|top"/>
 </FrameLayout>

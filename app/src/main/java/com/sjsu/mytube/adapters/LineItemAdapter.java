@@ -3,7 +3,11 @@ package com.sjsu.mytube.adapters;
 import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +20,9 @@ import com.sjsu.mytube.R;
 import com.sjsu.mytube.activities.PlayerActivity;
 import com.sjsu.mytube.models.VideoLineItem;
 
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URL;
 import java.util.List;
 
 public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineItemViewHolder> {
@@ -39,12 +46,40 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
     }
 
     @Override
-    public void onBindViewHolder(LineItemViewHolder holder, int position) {
-        VideoLineItem current = data.get(position);
-        holder.title.setText(current.getTitle());
-        holder.icon.setImageResource(R.drawable.video_play_image);
-        holder.pubdate.setText(current.getPubdate());
-        holder.owner.setText(current.getOwner());
+    public void onBindViewHolder( final LineItemViewHolder holder, int position ) {
+        final VideoLineItem current = data.get(position);
+
+        try {
+            holder.title.setText(current.getTitle());
+            holder.pubdate.setText(current.getPubdate().toString());
+            holder.owner.setText(current.getViewCount().toString());   // FIXME
+        }
+        catch (Exception e) {
+            Log.e("LineItemAdapter", "Unkown Exception.", e);
+        }
+
+        Thread thread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    URL thumbUrl = new URL( current.getImageUrl() );
+                    final Drawable thumbDrawable = Drawable.createFromStream(thumbUrl.openStream(), "src");
+                    synchronized ( holder )
+                    {
+                        holder.rootView.post(new Runnable() {
+                            public void run() {
+                                holder.icon.setImageDrawable(thumbDrawable);
+                            }
+                        });
+                    }
+                }
+                catch (Exception e) {
+                    Log.e("LineItemAdapter", "Unkown Exception.", e);
+                }
+            }
+        });
+
+        thread.start();
     }
 
     @Override
@@ -59,9 +94,11 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         ImageView icon;
         TextView owner;
         TextView pubdate;
+        View rootView;
 
         public LineItemViewHolder(View itemView) {
             super(itemView);
+            rootView = itemView;
             title = (TextView) itemView.findViewById(R.id.tv_title);
             owner = (TextView) itemView.findViewById(R.id.tv_owner);
             pubdate = (TextView) itemView.findViewById(R.id.tv_pubdate);
