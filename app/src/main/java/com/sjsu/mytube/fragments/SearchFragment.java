@@ -7,18 +7,20 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.adapters.LineItemAdapter;
 import com.sjsu.mytube.data.TestVideoData;
+import com.sjsu.mytube.helpers.YoutubeHelper;
 import com.sjsu.mytube.models.VideoInfo;
 import com.sjsu.mytube.models.VideoLineItem;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class SearchFragment extends Fragment {
+public class SearchFragment extends Fragment implements SearchView.OnQueryTextListener {
     private static final String DATA = "data";
 
     // TODO: Rename and change types of parameters
@@ -26,9 +28,10 @@ public class SearchFragment extends Fragment {
     private TextView tvPagePosition;
     private RecyclerView recyclerView;
     private LineItemAdapter lineItemAdapter;
-    private List<VideoInfo> videoInfoList = TestVideoData.getNewInstance().getVideoList();
     List<VideoLineItem> videoLineItems = new ArrayList<VideoLineItem>();
 
+    private String queryText;
+    private SearchView searchView;
 
     public static SearchFragment newInstance(int data) {
         SearchFragment fragment = new SearchFragment();
@@ -61,21 +64,63 @@ public class SearchFragment extends Fragment {
 //          tvPagePosition.setText("Page " +bundle.getInt("position"));
         }
 
-        if(videoInfoList != null) {
-            for (VideoInfo videoInfo : videoInfoList) {
-                VideoLineItem videoLineItem = new VideoLineItem();
-//                videoLineItem.setImageUrl(videoInfo.getImageUrl());
-                videoLineItem.setTitle(videoInfo.getTitle());
-                videoLineItem.setOwner(videoInfo.getOwner());
-                videoLineItem.setPubdate(videoInfo.getPublishDate());
-                videoLineItems.add(videoLineItem);
-            }
-        }
+        searchView = ( SearchView ) layout.findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener( this );
 
         recyclerView = (RecyclerView) layout.findViewById(R.id.videolist_rcview);
         lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems);
         recyclerView.setAdapter(lineItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return layout;
+    }
+
+
+    public boolean onQueryTextSubmit( String _queryText )
+    {
+        synchronized( this )
+        {
+            queryText = _queryText;
+
+            Thread thread = new Thread ( new Runnable() {
+                @Override
+                public void run()
+                {
+                    List<VideoInfo> videoInfoList = YoutubeHelper.shared().Search( queryText );
+
+                    videoLineItems.clear();
+
+                    if(videoInfoList != null)
+                    {
+                        for (VideoInfo videoInfo : videoInfoList)
+                        {
+                            VideoLineItem videoLineItem = new VideoLineItem();
+                            videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
+                            videoLineItem.setTitle(videoInfo.getTitle());
+                            // videoLineItem.setOwner(videoInfo.getOwner());
+                            videoLineItem.setPubdate(videoInfo.getPublishDate());
+                            videoLineItems.add(videoLineItem);
+                        }
+                    }
+
+                    getActivity().runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            lineItemAdapter.notifyDataSetChanged();
+                        }
+                    });
+                }
+            } );
+
+            thread.start();
+
+            searchView.clearFocus();
+        }
+
+        return true;
+    }
+
+    public boolean onQueryTextChange( String quertText )
+    {
+        return true;
     }
 }

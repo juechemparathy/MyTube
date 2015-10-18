@@ -65,9 +65,9 @@ public class FavoriteFragment extends Fragment {
         if(videoInfoList != null) {
             for (VideoInfo videoInfo : videoInfoList) {
                 VideoLineItem videoLineItem = new VideoLineItem();
-//                videoLineItem.setImageUrl(videoInfo.getImageUrl());
+                videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
                 videoLineItem.setTitle(videoInfo.getTitle());
-                videoLineItem.setOwner(videoInfo.getOwner());
+                // videoLineItem.setOwner(videoInfo.getOwner()); // TODO
                 videoLineItem.setPubdate(videoInfo.getPublishDate());
                 videoLineItems.add(videoLineItem);
             }

@@ -1,43 +1,36 @@
 package com.sjsu.mytube.models;
 
+import com.google.api.client.util.DateTime;
 import com.google.api.services.youtube.model.Video;
 
-/**
- * Created by jue on 10/10/15.
- */
 public class VideoInfo {
-    private Video video;
+    private String id;
+    private String title;
+    private DateTime publisherDate;
+    private String thumbnailUrl;
+    private int numberOfViews;
 
-    public Video getVideo() {
-        return video;
-    }
-
-    public void setVideo(Video video) {
-        this.video = video;
-    }
-
-    public String getWatchUrl(){
-        return null;
-    }
-
-    public String getImageUrl(){
-        return null;
+    public String getThumbnailUrl(){
+        return thumbnailUrl;
     }
 
     public int getNumberOfViews(){
-        return 10;
+        return numberOfViews;
     }
 
-    public String getPublishDate(){
-        return "02-10-2015";
+    public DateTime getPublishDate(){
+        return publisherDate;
     }
 
-    public String getTitle(){
-        return "Video Title";
-    }
+    public String getTitle(){ return title; }
 
-    public String getOwner(){
-        return "sjsuOwner";
+    public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, int _numberOfViews )
+    {
+        id = _id;
+        title = _title;
+        publisherDate = _publisherDate;
+        thumbnailUrl = _thumbnailUrl;
+        numberOfViews = _numberOfViews;
     }
 
     // any custom getters  on video should be added below.
