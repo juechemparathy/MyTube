@@ -69,6 +69,7 @@ public class PlaylistFragment extends Fragment {
                 videoLineItem.setTitle(videoInfo.getTitle());
                 //videoLineItem.setOwner(videoInfo.getOwner());
                 videoLineItem.setPubdate(videoInfo.getPublishDate());
+                videoLineItem.setViewCount( videoInfo.getViewCount() );
                 videoLineItems.add(videoLineItem);
             }
         }

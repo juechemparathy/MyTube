@@ -2,12 +2,25 @@ package com.sjsu.mytube.models;
 
 import com.google.api.client.util.DateTime;
 
+import java.math.BigInteger;
+
 public class VideoLineItem {
     private String title;
     private String imageUrl;
     private String owner;
     private DateTime pubdate;
     private int star;
+    private BigInteger viewCount;
+
+    public VideoLineItem()
+    {
+        title = "";
+        imageUrl = "";
+        owner = "";
+        pubdate = new DateTime( 0 );
+        star = 0;
+        viewCount = BigInteger.ZERO;
+    }
 
     public DateTime getPubdate() {
         return pubdate;
@@ -47,5 +60,11 @@ public class VideoLineItem {
 
     public void setStar(int star) {
         this.star = star;
+    }
+
+    public BigInteger getViewCount() { return viewCount; }
+
+    public void setViewCount( BigInteger _viewCount ) {
+        viewCount = _viewCount;
     }
 }

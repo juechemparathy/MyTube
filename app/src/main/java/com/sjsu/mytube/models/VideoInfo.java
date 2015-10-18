@@ -1,21 +1,22 @@
 package com.sjsu.mytube.models;
 
 import com.google.api.client.util.DateTime;
-import com.google.api.services.youtube.model.Video;
+
+import java.math.BigInteger;
 
 public class VideoInfo {
     private String id;
     private String title;
     private DateTime publisherDate;
     private String thumbnailUrl;
-    private int numberOfViews;
+    private BigInteger viewCount;
 
     public String getThumbnailUrl(){
         return thumbnailUrl;
     }
 
-    public int getNumberOfViews(){
-        return numberOfViews;
+    public BigInteger getViewCount(){
+        return viewCount;
     }
 
     public DateTime getPublishDate(){
@@ -24,13 +25,13 @@ public class VideoInfo {
 
     public String getTitle(){ return title; }
 
-    public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, int _numberOfViews )
+    public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, BigInteger _viewCount )
     {
         id = _id;
         title = _title;
         publisherDate = _publisherDate;
         thumbnailUrl = _thumbnailUrl;
-        numberOfViews = _numberOfViews;
+        viewCount = _viewCount;
     }
 
     // any custom getters  on video should be added below.

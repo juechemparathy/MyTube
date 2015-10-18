@@ -46,7 +46,17 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
     @Override
     public void onBindViewHolder( final LineItemViewHolder holder, int position ) {
         final VideoLineItem current = data.get(position);
-        holder.title.setText(current.getTitle());
+
+        try
+        {
+            holder.title.setText(current.getTitle());
+            holder.pubdate.setText(current.getPubdate().toString());
+            holder.owner.setText(current.getViewCount().toString());   // FIXME
+        }
+        catch (Exception e)
+        {
+            Log.e("LineItemAdapter", "Unkown Exception.", e);
+        }
 
         Thread thread = new Thread(new Runnable() {
             @Override
@@ -54,10 +64,14 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
                 try
                 {
                     URL thumbUrl = new URL( current.getImageUrl() );
-                    Drawable thumb_d = Drawable.createFromStream(thumbUrl.openStream(), "src");
+                    final Drawable thumbDrawable = Drawable.createFromStream(thumbUrl.openStream(), "src");
                     synchronized ( holder )
                     {
-                        holder.icon.setImageDrawable(thumb_d);
+                        holder.rootView.post(new Runnable() {
+                            public void run() {
+                                holder.icon.setImageDrawable(thumbDrawable);
+                            }
+                        });
                     }
                 }
                 catch (Exception e)
@@ -68,10 +82,6 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         });
 
         thread.start();
-
-        holder.icon.setImageURI(Uri.parse( current.getImageUrl() ) );
-        holder.pubdate.setText(current.getPubdate().toString());
-        holder.owner.setText(current.getOwner());
     }
 
     @Override
@@ -86,9 +96,11 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         ImageView icon;
         TextView owner;
         TextView pubdate;
+        View rootView;
 
         public LineItemViewHolder(View itemView) {
             super(itemView);
+            rootView = itemView;
             title = (TextView) itemView.findViewById(R.id.tv_title);
             owner = (TextView) itemView.findViewById(R.id.tv_owner);
             pubdate = (TextView) itemView.findViewById(R.id.tv_pubdate);

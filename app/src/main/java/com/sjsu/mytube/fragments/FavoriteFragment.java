@@ -69,6 +69,7 @@ public class FavoriteFragment extends Fragment {
                 videoLineItem.setTitle(videoInfo.getTitle());
                 // videoLineItem.setOwner(videoInfo.getOwner()); // TODO
                 videoLineItem.setPubdate(videoInfo.getPublishDate());
+                videoLineItem.setViewCount( videoInfo.getViewCount() );
                 videoLineItems.add(videoLineItem);
             }
         }
