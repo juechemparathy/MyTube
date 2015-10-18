@@ -12,7 +12,6 @@ import android.widget.TextView;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.adapters.LineItemAdapter;
-import com.sjsu.mytube.data.TestVideoData;
 import com.sjsu.mytube.helpers.YoutubeHelper;
 import com.sjsu.mytube.models.VideoInfo;
 import com.sjsu.mytube.models.VideoLineItem;
@@ -90,6 +89,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
                     if(videoInfoList != null) {
                         for (VideoInfo videoInfo : videoInfoList) {
                             VideoLineItem videoLineItem = new VideoLineItem();
+                            videoLineItem.setVideoId( videoInfo.getVideoId() );
                             videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
                             videoLineItem.setTitle(videoInfo.getTitle());
                             // videoLineItem.setOwner(videoInfo.getOwner());

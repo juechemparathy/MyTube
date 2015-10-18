@@ -5,7 +5,7 @@ import com.google.api.client.util.DateTime;
 import java.math.BigInteger;
 
 public class VideoInfo {
-    private String id;
+    private String videoId;
     private String title;
     private DateTime publisherDate;
     private String thumbnailUrl;
@@ -25,8 +25,10 @@ public class VideoInfo {
 
     public String getTitle(){ return title; }
 
+    public String getVideoId() { return videoId; }
+
     public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, BigInteger _viewCount ) {
-        id = _id;
+        videoId = _id;
         title = _title;
         publisherDate = _publisherDate;
         thumbnailUrl = _thumbnailUrl;

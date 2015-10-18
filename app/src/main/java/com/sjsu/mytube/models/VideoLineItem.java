@@ -5,6 +5,7 @@ import com.google.api.client.util.DateTime;
 import java.math.BigInteger;
 
 public class VideoLineItem {
+    private String videoId;
     private String title;
     private String imageUrl;
     private String owner;
@@ -65,5 +66,11 @@ public class VideoLineItem {
 
     public void setViewCount( BigInteger _viewCount ) {
         viewCount = _viewCount;
+    }
+
+    public String getVideoId() { return videoId; };
+
+    public void setVideoId( String _videoId ) {
+        videoId = _videoId;
     }
 }

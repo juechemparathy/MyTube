@@ -1,9 +1,7 @@
 package com.sjsu.mytube.helpers;
 
-import android.provider.MediaStore;
 import android.util.Log;
 
-import com.google.android.gms.auth.api.Auth;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -11,6 +9,9 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.PlaylistItem;
+import com.google.api.services.youtube.model.PlaylistItemSnippet;
+import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
@@ -29,16 +30,24 @@ public class YoutubeHelper {
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final GsonFactory JSON_FACTORY = new GsonFactory();
-    private static final String API_KEY = "AIzaSyCZ5AGF_E1RfPhsX-3tX6HZKj-Zgt7JKuY";
-    private static final long MAX_VIDEOS_RETURNED = 20;
+    private static final String API_KEY = "AIzaSyCZ5AGF_E1RfPhsX-3tX6HZKj-Zgt7JKuY"; // "AIzaSyCtLOXBs3kGN8JPJLRIYvYr4Ri46yAL3xU";
+    private static final long MAX_VIDEOS_RETURNED = 25;
+    private static final String STAR_PLAYLIST_ID = "--PLAYLIST-ID-GOES-HERE";
 
     private YouTube youtube;
 
     private YoutubeHelper() {
-        youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
-            public void initialize(HttpRequest request) throws IOException {
-            }
-        }).setApplicationName( "MyTube" ).build();
+
+        YouTube.Builder builder = new YouTube.Builder(
+                HTTP_TRANSPORT,
+                JSON_FACTORY,
+                new HttpRequestInitializer() {
+                    public void initialize(HttpRequest request) throws IOException {
+                    }
+                }
+        );
+        builder.setApplicationName("MyTube");
+        youtube = builder.build();
     }
 
     public static YoutubeHelper shared() {
@@ -61,15 +70,19 @@ public class YoutubeHelper {
     {
         List<VideoInfo> result = new ArrayList<VideoInfo>();
 
-        try {
-            YouTube.Search.List searchHelper = youtube.search().list( "id,snippet" );
-            searchHelper.setKey( API_KEY );
-            searchHelper.setQ(query );
-            searchHelper.setType("video");
-            searchHelper.setFields("items(id/kind,id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/default/url)");
-            searchHelper.setMaxResults( MAX_VIDEOS_RETURNED );
+        if ( youtube == null ) {
+            return result;
+        }
 
-            SearchListResponse searchResponse = searchHelper.execute();
+        try {
+            YouTube.Search.List searchCommand = youtube.search().list( "id,snippet" );
+            searchCommand.setKey(API_KEY);
+            searchCommand.setQ(query);
+            searchCommand.setType("video");
+            searchCommand.setFields("items(id/kind,id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/default/url)");
+            searchCommand.setMaxResults(MAX_VIDEOS_RETURNED);
+
+            SearchListResponse searchResponse = searchCommand.execute();
 
             List<SearchResult> searchResultList = searchResponse.getItems();
 
@@ -80,9 +93,9 @@ public class YoutubeHelper {
 
                     String videoId = searchResult.getId().getVideoId();
 
-                    YouTube.Videos.List videoInfoHelper = youtube.videos().list("snippet, statistics").setId(videoId);
-                    videoInfoHelper.setKey( API_KEY );
-                    VideoListResponse videoInfoHelperResponse = videoInfoHelper.execute();
+                    YouTube.Videos.List videoInfoCommand = youtube.videos().list("snippet, statistics").setId(videoId);
+                    videoInfoCommand.setKey(API_KEY);
+                    VideoListResponse videoInfoHelperResponse = videoInfoCommand.execute();
 
                     List<Video> videoInfoResultList = videoInfoHelperResponse.getItems();
 
@@ -105,13 +118,48 @@ public class YoutubeHelper {
                 }
             }
         } catch ( GoogleJsonResponseException exception ) {
-            Log.e( "Youtubehelper", "Google Json Response Exception.", exception );
+            Log.e( "Youtubehelper", "Search", exception );
         } catch ( IOException exception ) {
-            Log.e( "Youtubehelper", "IO Exception.", exception );
+            Log.e( "Youtubehelper", "Search", exception );
         } catch ( Exception exception ) {
-            Log.e( "Youtubehelper", "Unkown Exception.", exception );
+            Log.e( "Youtubehelper", "Search", exception );
         }
 
         return result;
+    }
+
+    public boolean PlaylistInsert( final String videoId, final String playlistId ) {
+
+        if ( youtube == null ) {
+            return false;
+        }
+
+        ResourceId resourceId = new ResourceId();
+        resourceId.setKind("youtube#video");
+        resourceId.setVideoId(videoId);
+
+        PlaylistItemSnippet playlistItemSnippet = new PlaylistItemSnippet();
+        playlistItemSnippet.setPlaylistId(playlistId);
+        playlistItemSnippet.setResourceId(resourceId);
+
+        PlaylistItem playlistItem = new PlaylistItem();
+        playlistItem.setSnippet(playlistItemSnippet);
+
+        try {
+            YouTube.PlaylistItems.Insert playlistItemsInsertCommand = youtube.playlistItems().insert("snippet,contentDetails", playlistItem );
+            playlistItemsInsertCommand.setKey( API_KEY );
+            PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
+
+            if ( returnedPlaylistItem != null ) {
+                return true;
+            }
+        } catch ( IOException exception ) {
+            Log.e( "Youtubehelper", "PlaylistInsert", exception );
+        }
+        return false;
+    }
+
+    public  boolean PlaylistInsertStarred( final String videoId ) {
+        return PlaylistInsert( videoId, STAR_PLAYLIST_ID );
     }
 }
