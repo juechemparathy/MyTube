@@ -47,22 +47,19 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
     public void onBindViewHolder( final LineItemViewHolder holder, int position ) {
         final VideoLineItem current = data.get(position);
 
-        try
-        {
+        try {
             holder.title.setText(current.getTitle());
             holder.pubdate.setText(current.getPubdate().toString());
             holder.owner.setText(current.getViewCount().toString());   // FIXME
         }
-        catch (Exception e)
-        {
+        catch (Exception e) {
             Log.e("LineItemAdapter", "Unkown Exception.", e);
         }
 
         Thread thread = new Thread(new Runnable() {
             @Override
             public void run() {
-                try
-                {
+                try {
                     URL thumbUrl = new URL( current.getImageUrl() );
                     final Drawable thumbDrawable = Drawable.createFromStream(thumbUrl.openStream(), "src");
                     synchronized ( holder )
@@ -74,8 +71,7 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
                         });
                     }
                 }
-                catch (Exception e)
-                {
+                catch (Exception e) {
                     Log.e("LineItemAdapter", "Unkown Exception.", e);
                 }
             }

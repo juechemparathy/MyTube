@@ -34,28 +34,20 @@ public class YoutubeHelper {
 
     private YouTube youtube;
 
-    private YoutubeHelper()
-    {
+    private YoutubeHelper() {
         youtube = new YouTube.Builder(HTTP_TRANSPORT, JSON_FACTORY, new HttpRequestInitializer() {
             public void initialize(HttpRequest request) throws IOException {
             }
         }).setApplicationName( "MyTube" ).build();
     }
 
-    public static YoutubeHelper shared()
-    {
-        if ( shared == null )
-        {
-            synchronized ( YoutubeHelper.class )
-            {
-                if ( shared == null )
-                {
-                    try
-                    {
+    public static YoutubeHelper shared() {
+        if ( shared == null ) {
+            synchronized ( YoutubeHelper.class ) {
+                if ( shared == null ) {
+                    try {
                         shared = new YoutubeHelper();
-                    }
-                    catch ( Exception exception )
-                    {
+                    } catch ( Exception exception ) {
                         Log.e( "YoutubeHelper", "Unable to initalize.", exception);
                     }
                 }
@@ -69,8 +61,7 @@ public class YoutubeHelper {
     {
         List<VideoInfo> result = new ArrayList<VideoInfo>();
 
-        try
-        {
+        try {
             YouTube.Search.List searchHelper = youtube.search().list( "id,snippet" );
             searchHelper.setKey( API_KEY );
             searchHelper.setQ(query );
@@ -82,10 +73,8 @@ public class YoutubeHelper {
 
             List<SearchResult> searchResultList = searchResponse.getItems();
 
-            if ( searchResultList != null )
-            {
-                for ( int i = 0; i < searchResultList.size(); i++ )
-                {
+            if ( searchResultList != null ) {
+                for ( int i = 0; i < searchResultList.size(); i++ ) {
                     SearchResult searchResult = searchResultList.get(i);
                     SearchResultSnippet searchResultSnippet = searchResult.getSnippet();
 
@@ -98,8 +87,7 @@ public class YoutubeHelper {
                     List<Video> videoInfoResultList = videoInfoHelperResponse.getItems();
 
                     BigInteger viewCount = BigInteger.ZERO;
-                    if ( videoInfoResultList != null )
-                    {
+                    if ( videoInfoResultList != null ) {
                         Video video = videoInfoResultList.get(0);
                         viewCount = video.getStatistics().getViewCount();
                     }
@@ -116,17 +104,11 @@ public class YoutubeHelper {
 
                 }
             }
-        }
-        catch ( GoogleJsonResponseException exception )
-        {
+        } catch ( GoogleJsonResponseException exception ) {
             Log.e( "Youtubehelper", "Google Json Response Exception.", exception );
-        }
-        catch ( IOException exception )
-        {
+        } catch ( IOException exception ) {
             Log.e( "Youtubehelper", "IO Exception.", exception );
-        }
-        catch ( Exception exception )
-        {
+        } catch ( Exception exception ) {
             Log.e( "Youtubehelper", "Unkown Exception.", exception );
         }
 

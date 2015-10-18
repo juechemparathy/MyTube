@@ -75,10 +75,8 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
     }
 
 
-    public boolean onQueryTextSubmit( String _queryText )
-    {
-        synchronized( this )
-        {
+    public boolean onQueryTextSubmit( String _queryText ) {
+        synchronized( this ) {
             queryText = _queryText;
 
             Thread thread = new Thread ( new Runnable() {
@@ -89,10 +87,8 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
 
                     videoLineItems.clear();
 
-                    if(videoInfoList != null)
-                    {
-                        for (VideoInfo videoInfo : videoInfoList)
-                        {
+                    if(videoInfoList != null) {
+                        for (VideoInfo videoInfo : videoInfoList) {
                             VideoLineItem videoLineItem = new VideoLineItem();
                             videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
                             videoLineItem.setTitle(videoInfo.getTitle());

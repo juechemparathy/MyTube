@@ -12,8 +12,7 @@ public class VideoLineItem {
     private int star;
     private BigInteger viewCount;
 
-    public VideoLineItem()
-    {
+    public VideoLineItem() {
         title = "";
         imageUrl = "";
         owner = "";

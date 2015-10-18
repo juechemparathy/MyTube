@@ -25,8 +25,7 @@ public class VideoInfo {
 
     public String getTitle(){ return title; }
 
-    public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, BigInteger _viewCount )
-    {
+    public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, BigInteger _viewCount ) {
         id = _id;
         title = _title;
         publisherDate = _publisherDate;
