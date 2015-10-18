@@ -12,6 +12,7 @@ import android.widget.Toast;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.activities.LoginActivity;
+import com.sjsu.mytube.activities.PlayerActivity;
 import com.sjsu.mytube.models.DrawerLineItem;
 
 import java.util.List;
@@ -74,7 +75,7 @@ public class DrawerLineItemAdapter extends RecyclerView.Adapter<DrawerLineItemAd
                 context.startActivity(i);
             }
             else {
-                Toast.makeText(context, "Clicked on position " + position, Toast.LENGTH_SHORT).show();
+
             }
         }
     }

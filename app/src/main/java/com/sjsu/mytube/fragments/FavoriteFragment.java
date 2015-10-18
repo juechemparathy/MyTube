@@ -30,7 +30,6 @@ public class FavoriteFragment extends Fragment {
     private List<VideoInfo> videoInfoList = TestVideoData.getNewInstance().getVideoList();
     List<VideoLineItem> videoLineItems = new ArrayList<VideoLineItem>();
 
-
     public static FavoriteFragment newInstance(int data) {
         FavoriteFragment fragment = new FavoriteFragment();
         Bundle args = new Bundle();

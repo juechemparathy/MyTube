@@ -1,5 +1,6 @@
 package com.sjsu.mytube.adapters;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -10,8 +11,9 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.sjsu.mytube.R;
-import com.sjsu.mytube.activities.SomeActivity;
+import com.sjsu.mytube.activities.PlayerActivity;
 import com.sjsu.mytube.models.VideoLineItem;
 
 import java.util.List;
@@ -76,8 +78,12 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
             int position = getPosition();
             //Handle this more elegantly
             if (position == 1) {
-                context.startActivity(new Intent(context, SomeActivity.class));
+                Intent i = new Intent(context, PlayerActivity.class);
+                context.startActivity(i);
             } else {
+                Intent intent = null;
+                intent= YouTubeStandalonePlayer.createVideoIntent((Activity) context,PlayerActivity.API_KEY, PlayerActivity.VIDEO_ID,0,true,false);
+                context.startActivity(intent);
                 Toast.makeText(context, "Clicked on position " + position, Toast.LENGTH_SHORT).show();
             }
         }
