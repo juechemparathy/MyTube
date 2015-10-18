@@ -13,7 +13,8 @@
         <ImageView
             android:layout_width="280dp"
             android:layout_height="140dp"
-            android:src="@drawable/mytube_icon" />
+            android:src="@drawable/mytube_icon"
+            android:background="@color/primary_text"/>
     </LinearLayout>
 
     <android.support.v7.widget.RecyclerView

@@ -8,7 +8,6 @@
     android:layout_width="20dp"
     android:layout_height="20dp"
     android:src="@drawable/ic_launcher"
-
     android:layout_gravity="center"
     android:layout_centerVertical="true"
     android:layout_marginLeft="16dp"

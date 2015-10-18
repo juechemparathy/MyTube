@@ -1,5 +1,6 @@
 package com.sjsu.mytube.data;
 
+import com.google.api.client.util.DateTime;
 import com.sjsu.mytube.models.VideoInfo;
 
 import java.util.ArrayList;
@@ -21,8 +22,7 @@ public class TestVideoData {
     public List<VideoInfo> getVideoList() {
         List<VideoInfo> videoInfoList = new ArrayList<VideoInfo>();
         for (int i = 0; i < 10; i++) {
-            VideoInfo v = new VideoInfo();
-            videoInfoList.add(v);
+           videoInfoList.add( new VideoInfo( "id0", "title0", new DateTime( 500 ), "https://i.ytimg.com/vi/fbkzNPe5s64/default.jpg", 1 ) );
         }
         return videoInfoList;
     }

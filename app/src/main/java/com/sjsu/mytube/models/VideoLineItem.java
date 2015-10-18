@@ -6,6 +6,16 @@ public class VideoLineItem {
     private String owner;
     private String pubdate;
     private int star;
+    private String videoId;
+    private int viewCount;
+
+    public int getViewCount() {
+        return viewCount;
+    }
+
+    public void setViewCount(int _viewCount) {
+        viewCount = _viewCount;
+    }
 
     public String getPubdate() {
         return pubdate;
@@ -45,5 +55,15 @@ public class VideoLineItem {
 
     public void setStar(int star) {
         this.star = star;
+    }
+
+    public String getVideoId() {
+        return videoId;
+    }
+
+    ;
+
+    public void setVideoId(String _videoId) {
+        videoId = _videoId;
     }
 }

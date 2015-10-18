@@ -8,11 +8,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.activities.LoginActivity;
-import com.sjsu.mytube.activities.PlayerActivity;
+import com.sjsu.mytube.activities.MainActivity;
 import com.sjsu.mytube.models.DrawerLineItem;
 
 import java.util.List;
@@ -67,10 +66,16 @@ public class DrawerLineItemAdapter extends RecyclerView.Adapter<DrawerLineItemAd
         public void onClick(View view) {
             int position = getAdapterPosition();
             //Handle this more elegantly
-            if(position == 3){
+
+            if(position == 0){
+                context.startActivity(new Intent(context, MainActivity.class));
+            }if(position == 1){
+                context.startActivity(new Intent(context, MainActivity.class));
+            }if(position == 2){
+                context.startActivity(new Intent(context, MainActivity.class));
+            }else if(position == 3){
                 Intent i = new Intent(context, LoginActivity.class);
                 i.putExtra("action", "logout");
-                // Was trying to remove the call stack on logout.
                 i.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 context.startActivity(i);
             }

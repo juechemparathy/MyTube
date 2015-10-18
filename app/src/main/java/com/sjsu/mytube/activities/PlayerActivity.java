@@ -8,19 +8,20 @@ import com.google.android.youtube.player.YouTubeInitializationResult;
 import com.google.android.youtube.player.YouTubePlayer;
 import com.google.android.youtube.player.YouTubePlayerView;
 import com.sjsu.mytube.R;
+import com.sjsu.mytube.helpers.YoutubeHelper;
 
 public class PlayerActivity extends YouTubeBaseActivity implements
         YouTubePlayer.OnInitializedListener {
-    public static final String API_KEY = "AIzaSyCtLOXBs3kGN8JPJLRIYvYr4Ri46yAL3xU";
-    public static final String VIDEO_ID = "o7VVHhK9zf0";
 
+    private String videoId;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_player);
 
+        videoId = getIntent().getStringExtra("videoId");
         YouTubePlayerView youTubePlayerView = (YouTubePlayerView)findViewById(R.id.youtubeplayerview);
-        youTubePlayerView.initialize(API_KEY, this);
+        youTubePlayerView.initialize(YoutubeHelper.API_KEY, this);
     }
 
     @Override
@@ -36,7 +37,7 @@ public class PlayerActivity extends YouTubeBaseActivity implements
                                         boolean wasRestored) {
         if (!wasRestored) {
             player.setFullscreen(true);
-            player.loadVideo(VIDEO_ID);
+            player.loadVideo(videoId);
         }
     }
 

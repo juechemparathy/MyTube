@@ -65,7 +65,7 @@ public class PlaylistFragment extends Fragment {
         if(videoInfoList != null) {
             for (VideoInfo videoInfo : videoInfoList) {
                 VideoLineItem videoLineItem = new VideoLineItem();
-//                videoLineItem.setImageUrl(videoInfo.getImageUrl());
+                videoLineItem.setImageUrl(videoInfo.getImageUrl());
                 videoLineItem.setTitle(videoInfo.getTitle());
                 videoLineItem.setOwner(videoInfo.getOwner());
                 videoLineItem.setPubdate(videoInfo.getPublishDate());

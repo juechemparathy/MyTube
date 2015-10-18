@@ -1,6 +1,5 @@
 package com.sjsu.mytube.adapters;
 
-import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.RecyclerView;
@@ -9,12 +8,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.youtube.player.YouTubeStandalonePlayer;
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.activities.PlayerActivity;
 import com.sjsu.mytube.models.VideoLineItem;
+import com.squareup.picasso.Picasso;
 
 import java.util.List;
 
@@ -42,9 +40,9 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
     public void onBindViewHolder(LineItemViewHolder holder, int position) {
         VideoLineItem current = data.get(position);
         holder.title.setText(current.getTitle());
-        holder.icon.setImageResource(R.drawable.video_play_image);
         holder.pubdate.setText(current.getPubdate());
         holder.owner.setText(current.getOwner());
+        Picasso.with(context).load(current.getImageUrl()).into(holder.icon);
     }
 
     @Override
@@ -67,6 +65,7 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
             pubdate = (TextView) itemView.findViewById(R.id.tv_pubdate);
             icon = (ImageView) itemView.findViewById(R.id.iv_image);
 
+
             icon.setOnClickListener(this);
             title.setOnClickListener(this);
             owner.setOnClickListener(this);
@@ -77,15 +76,9 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         public void onClick(View view) {
             int position = getPosition();
             //Handle this more elegantly
-            if (position == 1) {
-                Intent i = new Intent(context, PlayerActivity.class);
-                context.startActivity(i);
-            } else {
-                Intent intent = null;
-                intent= YouTubeStandalonePlayer.createVideoIntent((Activity) context,PlayerActivity.API_KEY, PlayerActivity.VIDEO_ID,0,true,false);
-                context.startActivity(intent);
-                Toast.makeText(context, "Clicked on position " + position, Toast.LENGTH_SHORT).show();
-            }
+            Intent i = new Intent(context, PlayerActivity.class);
+            i.putExtra("videoId",data.get(position).getVideoId());
+            context.startActivity(i);
         }
     }
 

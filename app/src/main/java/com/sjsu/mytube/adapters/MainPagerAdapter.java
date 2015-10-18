@@ -8,7 +8,6 @@ import android.support.v4.app.FragmentPagerAdapter;
 import android.text.SpannableString;
 import android.text.Spanned;
 import android.text.style.ImageSpan;
-import android.widget.Toast;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.fragments.FavoriteFragment;
@@ -19,8 +18,12 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     Context context;
 
-    String[] tabTitles = {"Search", "Favorites", "Playlist"};
-    int icons[] = {R.drawable.mytube_search, R.drawable.mytube_favorite, R.drawable.mytube_playlist};
+//    String[] tabTitles = { "Playlist","Search"};
+//    int icons[] = {R.drawable.mytube_playlist,R.drawable.mytube_search};
+
+    String[] tabTitles = { "Playlist","Search", "Favorites",};
+    int icons[] = {R.drawable.mytube_playlist,R.drawable.mytube_search, R.drawable.mytube_favorite};
+
 
     public MainPagerAdapter(FragmentManager fm,Context c) {
         super(fm);
@@ -32,20 +35,16 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
         Fragment fragment = null;
         switch (position){
             case 0:
-                Toast.makeText(this.context, "Selected search", Toast.LENGTH_SHORT).show();
-                fragment = new SearchFragment();
+                fragment = new PlaylistFragment();
                 break;
             case 1:
-                Toast.makeText(this.context,"Selected favorite",Toast.LENGTH_SHORT).show();
-                fragment = new FavoriteFragment();
+                fragment = new SearchFragment();
+
             break;
             case 2:
-                Toast.makeText(this.context,"Selected playlist",Toast.LENGTH_SHORT).show();
-                fragment = new PlaylistFragment();
-
+                fragment = new FavoriteFragment();
                 break;
             default:
-                Toast.makeText(this.context,"Invalid selection",Toast.LENGTH_SHORT).show();
                 fragment =  new SearchFragment();
                 break;
         }

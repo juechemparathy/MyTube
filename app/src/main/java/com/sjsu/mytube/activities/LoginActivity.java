@@ -84,7 +84,7 @@ public class LoginActivity extends Activity implements OnClickListener, Connecti
             } else {
                 // Could not resolve the connection result, show the user an
                 // error dialog.
-                Toast.makeText(this,connectionResult.getErrorMessage(),Toast.LENGTH_LONG).show();
+                Toast.makeText(this,connectionResult.getErrorCode() + connectionResult.getErrorMessage(),Toast.LENGTH_LONG).show();
             }
         } else {
             // Show the signed-out UI
