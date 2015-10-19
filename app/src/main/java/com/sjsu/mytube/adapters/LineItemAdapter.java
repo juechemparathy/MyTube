@@ -13,10 +13,9 @@ import android.widget.CheckBox;
 import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.sjsu.mytube.R;
-import com.sjsu.mytube.activities.SomeActivity;
+import com.sjsu.mytube.activities.PlayerActivity;
 import com.sjsu.mytube.helpers.YoutubeHelper;
 import com.sjsu.mytube.models.VideoLineItem;
 
@@ -186,12 +185,9 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         public void onClick(View view) {
             int position = getPosition();
             //Handle this more elegantly
-            if (position == 1) {
-                context.startActivity(new Intent(context, SomeActivity.class));
-            } else {
-                Toast.makeText(context, "Clicked on position " + position, Toast.LENGTH_SHORT).show();
-            }
-        }
+            Intent i = new Intent(context, PlayerActivity.class);
+            i.putExtra("videoId",data.get(position).getVideoId());
+            context.startActivity(i);        }
     }
 
 }
