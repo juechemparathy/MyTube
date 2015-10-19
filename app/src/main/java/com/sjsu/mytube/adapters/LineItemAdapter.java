@@ -9,6 +9,8 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -28,18 +30,20 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
     private List<VideoLineItem> data;
     private Context context;
     private boolean shouldShowStar;
+    private List<String> selectedPlaylistItemIds;
 
-    public LineItemAdapter(Context context, List<VideoLineItem> _data, boolean _shouldShowStar) {
+    public LineItemAdapter(Context context, List<VideoLineItem> _data, boolean _shouldShowStar, List<String> _selectedPlaylistItemIds) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
         this.data = _data;
         this.shouldShowStar = _shouldShowStar;
+        this.selectedPlaylistItemIds = _selectedPlaylistItemIds;
     }
 
     @Override
     public LineItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View lineItemView = layoutInflater.inflate(R.layout.video_lineitem, parent, false);
-        LineItemViewHolder viewHolder = new LineItemViewHolder(lineItemView, shouldShowStar);
+        LineItemViewHolder viewHolder = new LineItemViewHolder(lineItemView, shouldShowStar, selectedPlaylistItemIds);
         return viewHolder;
     }
 
@@ -112,6 +116,33 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         }
     }
 
+    class LineItemCheckBoxChangeListener implements CompoundButton.OnCheckedChangeListener {
+
+        private LineItemViewHolder holder;
+        private List<String> selectedPlaylistItemIds;
+
+        LineItemCheckBoxChangeListener( List<String> _selectedPlaylistItemIds, LineItemViewHolder _holder ) {
+            selectedPlaylistItemIds = _selectedPlaylistItemIds;
+            holder = _holder;
+        }
+
+        public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+
+            final int position = holder.getPosition();
+            final VideoLineItem current = data.get(position);
+            final String playlistItemId = current.getPlaylistItemId();
+
+            if ( isChecked && !selectedPlaylistItemIds.contains( playlistItemId ) ) {
+                selectedPlaylistItemIds.add(playlistItemId);
+            }
+
+            if ( !isChecked && selectedPlaylistItemIds.contains(playlistItemId) ) {
+                selectedPlaylistItemIds.remove(playlistItemId);
+            }
+
+        }
+    }
+
     //ViewHolder for this adapter
     class LineItemViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         TextView title;
@@ -119,9 +150,10 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         TextView owner;
         TextView pubdate;
         Button starButton;
+        CheckBox checkBox;
         View rootView;
 
-        public LineItemViewHolder(View itemView, boolean _shouldShowStar) {
+        public LineItemViewHolder(View itemView, boolean _shouldShowStar, List<String> selectedPlaylistItemIds) {
             super(itemView);
             rootView = itemView;
             title = (TextView) itemView.findViewById(R.id.tv_title);
@@ -129,17 +161,25 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
             pubdate = (TextView) itemView.findViewById(R.id.tv_pubdate);
             icon = (ImageView) itemView.findViewById(R.id.iv_image);
             starButton = (Button) itemView.findViewById(R.id.starButton);
+            checkBox = (CheckBox) itemView.findViewById(R.id.checkBox);
 
             if ( _shouldShowStar )
                 starButton.setVisibility(View.VISIBLE);
             else
                 starButton.setVisibility(View.INVISIBLE);
 
+            if ( selectedPlaylistItemIds == null ) {
+                checkBox.setVisibility(View.INVISIBLE);
+            } else {
+                checkBox.setVisibility(View.VISIBLE);
+                checkBox.setOnCheckedChangeListener( new LineItemCheckBoxChangeListener( selectedPlaylistItemIds, this) );
+            }
+
             icon.setOnClickListener(this);
             title.setOnClickListener(this);
             owner.setOnClickListener(this);
             pubdate.setOnClickListener(this);
-            starButton.setOnClickListener( new LineItemStarButtonClickListener( this ) );
+            starButton.setOnClickListener( new LineItemStarButtonClickListener(this) );
         }
 
         @Override

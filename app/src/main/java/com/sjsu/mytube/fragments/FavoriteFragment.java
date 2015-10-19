@@ -7,11 +7,11 @@ import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.TextView;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.adapters.LineItemAdapter;
-import com.sjsu.mytube.data.TestVideoData;
 import com.sjsu.mytube.helpers.YoutubeHelper;
 import com.sjsu.mytube.models.VideoInfo;
 import com.sjsu.mytube.models.VideoLineItem;
@@ -19,8 +19,27 @@ import com.sjsu.mytube.models.VideoLineItem;
 import java.util.ArrayList;
 import java.util.List;
 
-
 public class FavoriteFragment extends Fragment {
+
+    public class DeleteSelectedButtonOnClickListener implements View.OnClickListener {
+
+        private List<String> selectedItemIdList;
+
+        public DeleteSelectedButtonOnClickListener( List<String> _selectedItemIdList ) {
+            selectedItemIdList = _selectedItemIdList;
+        }
+
+        public void onClick( View v) {
+            new Thread() {
+                @Override
+                public void run() {
+                    YoutubeHelper.shared().DeletePlaylistItems(selectedPlaylistItemIds);
+                }
+            }.start();
+        }
+
+    }
+
     private static final String DATA = "data";
 
     // TODO: Rename and change types of parameters
@@ -29,7 +48,7 @@ public class FavoriteFragment extends Fragment {
     private RecyclerView recyclerView;
     private LineItemAdapter lineItemAdapter;
     List<VideoLineItem> videoLineItems = new ArrayList<VideoLineItem>();
-
+    List<String> selectedPlaylistItemIds = new ArrayList<String>();
 
     public static FavoriteFragment newInstance(int data) {
         FavoriteFragment fragment = new FavoriteFragment();
@@ -62,6 +81,9 @@ public class FavoriteFragment extends Fragment {
 //          tvPagePosition.setText("Page " +bundle.getInt("position"));
         }
 
+        Button deleteSelected = (Button) layout.findViewById(R.id.deleteSelected);
+        deleteSelected.setOnClickListener(new DeleteSelectedButtonOnClickListener(selectedPlaylistItemIds));
+
         synchronized( this ) {
             Thread thread = new Thread(new Runnable() {
                 @Override
@@ -74,6 +96,7 @@ public class FavoriteFragment extends Fragment {
                         for (VideoInfo videoInfo : videoInfoList) {
                             VideoLineItem videoLineItem = new VideoLineItem();
                             videoLineItem.setVideoId(videoInfo.getVideoId());
+                            videoLineItem.setPlaylistItemId(videoInfo.getPlaylistItemId());
                             videoLineItem.setImageUrl(videoInfo.getThumbnailUrl());
                             videoLineItem.setTitle(videoInfo.getTitle());
                             // videoLineItem.setOwner(videoInfo.getOwner());
@@ -94,7 +117,7 @@ public class FavoriteFragment extends Fragment {
         }
 
         recyclerView = (RecyclerView) layout.findViewById(R.id.videolist_rcview);
-        lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems, false);
+        lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems, false, selectedPlaylistItemIds);
         recyclerView.setAdapter(lineItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return layout;

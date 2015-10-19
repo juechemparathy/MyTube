@@ -6,6 +6,7 @@ import java.math.BigInteger;
 
 public class VideoInfo {
     private String videoId;
+    private String playlistItemId;
     private String title;
     private DateTime publisherDate;
     private String thumbnailUrl;
@@ -27,8 +28,11 @@ public class VideoInfo {
 
     public String getVideoId() { return videoId; }
 
-    public VideoInfo( String _id, String _title, DateTime _publisherDate, String _thumbnailUrl, BigInteger _viewCount ) {
-        videoId = _id;
+    public String getPlaylistItemId() { return playlistItemId; }
+
+    public VideoInfo( String _videoId, String _playListItemId,String _title, DateTime _publisherDate, String _thumbnailUrl, BigInteger _viewCount ) {
+        videoId = _videoId;
+        playlistItemId = _playListItemId;
         title = _title;
         publisherDate = _publisherDate;
         thumbnailUrl = _thumbnailUrl;

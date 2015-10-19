@@ -118,6 +118,7 @@ public class YoutubeHelper {
 
                     VideoInfo videoInfo = new VideoInfo(
                             videoId,
+                            null,
                             searchResultSnippet.getTitle().toString(),
                             searchResultSnippet.getPublishedAt(),
                             searchResultSnippet.getThumbnails().getDefault().getUrl(),
@@ -176,6 +177,7 @@ public class YoutubeHelper {
 
                     VideoInfo videoInfo = new VideoInfo(
                             videoId,
+                            searchResult.getId(),
                             searchResultSnippet.getTitle().toString(),
                             searchResultSnippet.getPublishedAt(),
                             searchResultSnippet.getThumbnails().getDefault().getUrl(),
@@ -261,7 +263,7 @@ public class YoutubeHelper {
         if ( favoritePlaylistId == null ) {
             favoritePlaylistId = GetPlaylistIdFavorite();
         }
-        return PlaylistInsert( videoId, favoritePlaylistId);
+        return PlaylistInsert(videoId, favoritePlaylistId);
     }
 
     public List<VideoInfo> GetPlaylistVideosFavorite() {
@@ -269,5 +271,33 @@ public class YoutubeHelper {
             favoritePlaylistId = GetPlaylistIdFavorite();
         }
         return GetPlaylistVideos(favoritePlaylistId);
+    }
+
+    public boolean DeletePlaylistItem( String playlistItemId ) {
+
+        if ( playlistItemId == null ) {
+            return false;
+        }
+
+        try {
+            YouTube.PlaylistItems.Delete playlistItemDeleteCommmand = youtube.playlistItems().delete(playlistItemId);
+            playlistItemDeleteCommmand.execute();
+        } catch ( Exception e ) {
+            Log.e( "YoutubeHelper", "DeletePlaylistItem", e );
+        }
+
+        return true;
+    }
+
+    public boolean DeletePlaylistItems( List<String> playlistItemsIds ) {
+        if ( playlistItemsIds == null ) {
+            return false;
+        }
+
+        boolean result = true;
+        for ( String playlistItemId : playlistItemsIds ) {
+            result &= DeletePlaylistItem( playlistItemId );
+        }
+        return result;
     }
 }

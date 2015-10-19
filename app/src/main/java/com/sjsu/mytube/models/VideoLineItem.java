@@ -6,6 +6,7 @@ import java.math.BigInteger;
 
 public class VideoLineItem {
     private String videoId;
+    private String playlistItemId;
     private String title;
     private String imageUrl;
     private String owner;
@@ -72,5 +73,11 @@ public class VideoLineItem {
 
     public void setVideoId( String _videoId ) {
         videoId = _videoId;
+    }
+
+    public String getPlaylistItemId() { return playlistItemId; };
+
+    public void setPlaylistItemId( String _playlistItemId ) {
+        playlistItemId = _playlistItemId;
     }
 }

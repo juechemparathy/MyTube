@@ -14,4 +14,11 @@
         android:background="@color/background_floating_material_light">
     </android.support.v7.widget.RecyclerView>
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Delete Selected"
+        android:id="@+id/deleteSelected"
+        android:layout_gravity="center_horizontal|top" />
+
 </FrameLayout>
