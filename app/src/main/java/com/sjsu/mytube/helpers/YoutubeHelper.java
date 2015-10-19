@@ -13,9 +13,11 @@ import com.google.api.client.http.HttpTransport;
 import com.google.api.client.http.javanet.NetHttpTransport;
 import com.google.api.client.json.gson.GsonFactory;
 import com.google.api.services.youtube.YouTube;
+import com.google.api.services.youtube.model.Playlist;
 import com.google.api.services.youtube.model.PlaylistItem;
 import com.google.api.services.youtube.model.PlaylistItemListResponse;
 import com.google.api.services.youtube.model.PlaylistItemSnippet;
+import com.google.api.services.youtube.model.PlaylistListResponse;
 import com.google.api.services.youtube.model.ResourceId;
 import com.google.api.services.youtube.model.SearchListResponse;
 import com.google.api.services.youtube.model.SearchResult;
@@ -233,28 +235,19 @@ public class YoutubeHelper {
         }
 
         try {
-            YouTube.Search.List searchCommand = youtube.search().list( "id,snippet" );
-            searchCommand.setQ(playlistName);
-            searchCommand.setType("playlist");
-            searchCommand.setFields("items(id/playlistId)");
-            searchCommand.setMaxResults(MAX_PLAYLISTS_RETURNED);
-
-            SearchListResponse searchResponse = searchCommand.execute();
-
-            List<SearchResult> searchResultList = searchResponse.getItems();
-
-            if ( searchResultList != null ) {
-                for ( int i = 0; i < searchResultList.size(); i++ ) {
-                    SearchResult searchResult = searchResultList.get(i);
-                    playlistId = searchResult.getId().getPlaylistId();
+            YouTube.Playlists.List playlistListCommand = youtube.playlists().list("snippet,contentDetails");
+            playlistListCommand.setMine(true);
+            PlaylistListResponse playlistListResponse = playlistListCommand.execute();
+            List<Playlist> playlists = playlistListResponse.getItems();
+            Playlist favorPlaylist = null;
+            for (Playlist playlist : playlists) {
+                if (playlist.getSnippet().getTitle().equals(FAVORITE_PLAYLIST_NAME)) {
+                    favorPlaylist = playlist;
+                    return favorPlaylist.getId();
                 }
             }
-        } catch ( GoogleJsonResponseException exception ) {
-            Log.e( "Youtubehelper", "GetPlaylistId", exception );
-        } catch ( IOException exception ) {
-            Log.e( "Youtubehelper", "GetPlaylistId", exception );
-        } catch ( Exception exception ) {
-            Log.e( "Youtubehelper", "GetPlaylistId", exception );
+        } catch (Exception exception) {
+            Log.e("YoutubeHelper", "GetPlaylistId", exception);
         }
 
         return playlistId;
