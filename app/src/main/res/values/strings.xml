@@ -32,5 +32,6 @@
     <string name="signed_out">Signed out</string>
     <string name="logout">Logout</string>
     <string name="loginText">Please login with your Google Account</string>
+    <string name="title_activity_player">PlayerActivity</string>
 
 </resources>
