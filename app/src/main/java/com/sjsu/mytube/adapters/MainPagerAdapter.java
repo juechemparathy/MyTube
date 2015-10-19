@@ -12,15 +12,14 @@ import android.widget.Toast;
 
 import com.sjsu.mytube.R;
 import com.sjsu.mytube.fragments.FavoriteFragment;
-import com.sjsu.mytube.fragments.PlaylistFragment;
 import com.sjsu.mytube.fragments.SearchFragment;
 
 public class MainPagerAdapter extends FragmentPagerAdapter {
 
     Context context;
 
-    String[] tabTitles = {"Search", "Favorites", "Playlist"};
-    int icons[] = {R.drawable.mytube_search, R.drawable.mytube_favorite, R.drawable.mytube_playlist};
+    String[] tabTitles = {"Search", "Favorites"};
+    int icons[] = {R.drawable.mytube_search, R.drawable.mytube_favorite};
 
     public MainPagerAdapter(FragmentManager fm,Context c) {
         super(fm);
@@ -39,11 +38,6 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
                 Toast.makeText(this.context,"Selected favorite",Toast.LENGTH_SHORT).show();
                 fragment = new FavoriteFragment();
             break;
-            case 2:
-                Toast.makeText(this.context,"Selected playlist",Toast.LENGTH_SHORT).show();
-                fragment = new PlaylistFragment();
-
-                break;
             default:
                 Toast.makeText(this.context,"Invalid selection",Toast.LENGTH_SHORT).show();
                 fragment =  new SearchFragment();
@@ -65,6 +59,6 @@ public class MainPagerAdapter extends FragmentPagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;
+        return tabTitles.length;
     }
 }

@@ -67,7 +67,7 @@ public class SearchFragment extends Fragment implements SearchView.OnQueryTextLi
         searchView.setOnQueryTextListener( this );
 
         recyclerView = (RecyclerView) layout.findViewById(R.id.videolist_rcview);
-        lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems);
+        lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems, true);
         recyclerView.setAdapter(lineItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return layout;

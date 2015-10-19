@@ -94,7 +94,7 @@ public class FavoriteFragment extends Fragment {
         }
 
         recyclerView = (RecyclerView) layout.findViewById(R.id.videolist_rcview);
-        lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems);
+        lineItemAdapter = new LineItemAdapter(getActivity(), videoLineItems, false);
         recyclerView.setAdapter(lineItemAdapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getActivity()));
         return layout;

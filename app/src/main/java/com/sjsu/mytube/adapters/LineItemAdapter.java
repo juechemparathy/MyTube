@@ -27,17 +27,19 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
     private LayoutInflater layoutInflater;
     private List<VideoLineItem> data;
     private Context context;
+    private boolean shouldShowStar;
 
-    public LineItemAdapter(Context context, List<VideoLineItem> data) {
+    public LineItemAdapter(Context context, List<VideoLineItem> _data, boolean _shouldShowStar) {
         this.context = context;
         this.layoutInflater = LayoutInflater.from(context);
-        this.data = data;
+        this.data = _data;
+        this.shouldShowStar = _shouldShowStar;
     }
 
     @Override
     public LineItemViewHolder onCreateViewHolder(ViewGroup parent, int viewType) {
         View lineItemView = layoutInflater.inflate(R.layout.video_lineitem, parent, false);
-        LineItemViewHolder viewHolder = new LineItemViewHolder(lineItemView);
+        LineItemViewHolder viewHolder = new LineItemViewHolder(lineItemView, shouldShowStar);
         return viewHolder;
     }
 
@@ -80,6 +82,9 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
 
     @Override
     public int getItemCount() {
+        if ( data == null )
+            return 0;
+
         return data.size();
     }
 
@@ -116,7 +121,7 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
         Button starButton;
         View rootView;
 
-        public LineItemViewHolder(View itemView) {
+        public LineItemViewHolder(View itemView, boolean _shouldShowStar) {
             super(itemView);
             rootView = itemView;
             title = (TextView) itemView.findViewById(R.id.tv_title);
@@ -124,6 +129,11 @@ public class LineItemAdapter extends RecyclerView.Adapter<LineItemAdapter.LineIt
             pubdate = (TextView) itemView.findViewById(R.id.tv_pubdate);
             icon = (ImageView) itemView.findViewById(R.id.iv_image);
             starButton = (Button) itemView.findViewById(R.id.starButton);
+
+            if ( _shouldShowStar )
+                starButton.setVisibility(View.VISIBLE);
+            else
+                starButton.setVisibility(View.INVISIBLE);
 
             icon.setOnClickListener(this);
             title.setOnClickListener(this);
