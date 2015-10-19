@@ -44,8 +44,8 @@ public class YoutubeHelper {
 
     private YouTube youtube;
 
-    private YoutubeHelper() {
-        GoogleAccountCredential credential = LoginActivity.getCredential();
+    private YoutubeHelper( String token ) {
+        GoogleCredential credential = new GoogleCredential().setAccessToken( token );
         if ( credential != null ) {
             YouTube.Builder builder = new YouTube.Builder(
                     HTTP_TRANSPORT,
@@ -66,7 +66,8 @@ public class YoutubeHelper {
             synchronized ( YoutubeHelper.class ) {
                 if ( shared == null ) {
                     try {
-                        shared = new YoutubeHelper();
+                        String token = LoginActivity.getCredential().getToken();
+                        shared = new YoutubeHelper( token );
                     } catch ( Exception exception ) {
                         Log.e( "YoutubeHelper", "Unable to initalize.", exception);
                     }

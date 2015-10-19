@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
 import com.google.android.gms.common.api.GoogleApiClient;
@@ -40,7 +41,7 @@ public class LoginActivity extends Activity {
         List<String> scope = com.google.common.collect.Lists.newArrayList("https://www.googleapis.com/auth/youtube");
 
         credential = GoogleAccountCredential.usingOAuth2(this, scope);
-        startActivityForResult( credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER );
+        startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
     }
     protected void onStart() {
         super.onStart();
@@ -60,18 +61,28 @@ public class LoginActivity extends Activity {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         credential.setSelectedAccountName(accountName);
+
+                        try {
+                            credential.getToken();
+                        } catch ( UserRecoverableAuthException exception ) {
+                            // expected exception on 1st run with new account name
+                            startActivityForResult(exception.getIntent(), REQUEST_AUTHORIZATION);
+                        } catch ( Exception exception ) {
+                            Log.e( "LoginActivity", "onActivityResult", exception );
+                        }
+
                         hasCredential = true;
                         startActivity( new Intent(this,StartupActivity.class) );
                     }
                 } else {
-                    startActivityForResult( credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER );
+                    startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
                 }
                 break;
             case REQUEST_AUTHORIZATION:
 
                 if ( resultCode == Activity.RESULT_OK ) {
-                    // TODO : Useful Things
-                    Log.e( "LoginActivity", "onActivityResult", null );
+                    hasCredential = true;
+                    startActivity(new Intent(this, StartupActivity.class));
                 } else {
                     startActivityForResult( credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER );
                 }
