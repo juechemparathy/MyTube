@@ -1,7 +1,11 @@
 package com.sjsu.mytube.helpers;
 
+import android.accounts.AccountManager;
+import android.content.Context;
 import android.util.Log;
 
+import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
+import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.google.api.client.googleapis.json.GoogleJsonResponseException;
 import com.google.api.client.http.HttpRequest;
 import com.google.api.client.http.HttpRequestInitializer;
@@ -18,6 +22,7 @@ import com.google.api.services.youtube.model.SearchResult;
 import com.google.api.services.youtube.model.SearchResultSnippet;
 import com.google.api.services.youtube.model.Video;
 import com.google.api.services.youtube.model.VideoListResponse;
+import com.sjsu.mytube.activities.LoginActivity;
 import com.sjsu.mytube.models.VideoInfo;
 
 import java.io.IOException;
@@ -31,7 +36,6 @@ public class YoutubeHelper {
 
     private static final HttpTransport HTTP_TRANSPORT = new NetHttpTransport();
     private static final GsonFactory JSON_FACTORY = new GsonFactory();
-    private static final String API_KEY = "AIzaSyCZ5AGF_E1RfPhsX-3tX6HZKj-Zgt7JKuY"; //"AIzaSyCtLOXBs3kGN8JPJLRIYvYr4Ri46yAL3xU";//"AIzaSyAUURrcezOMraClM2YzAvODYyU51HFbAi8" ;
     private static final long MAX_VIDEOS_RETURNED = 25;
     private static final long MAX_PLAYLISTS_RETURNED = 1;
     private static final String FAVORITE_PLAYLIST_NAME = "SJSU-CMP-277";
@@ -41,19 +45,20 @@ public class YoutubeHelper {
     private YouTube youtube;
 
     private YoutubeHelper() {
+        GoogleAccountCredential credential = LoginActivity.getCredential();
+        if ( credential != null ) {
+            YouTube.Builder builder = new YouTube.Builder(
+                    HTTP_TRANSPORT,
+                    JSON_FACTORY,
+                    credential
+            );
+            builder.setApplicationName("MyTube");
+            youtube = builder.build();
 
-        YouTube.Builder builder = new YouTube.Builder(
-                HTTP_TRANSPORT,
-                JSON_FACTORY,
-                new HttpRequestInitializer() {
-                    public void initialize(HttpRequest request) throws IOException {
-                    }
-                }
-        );
-        builder.setApplicationName("MyTube");
-        youtube = builder.build();
-
-        favoritePlaylistId = null;
+            favoritePlaylistId = null;
+        } else {
+            Log.e( "YoutubeHelper", "Constructor", null );
+        }
     }
 
     public static YoutubeHelper shared() {
@@ -81,7 +86,6 @@ public class YoutubeHelper {
 
         try {
             YouTube.Search.List searchCommand = youtube.search().list( "id,snippet" );
-            searchCommand.setKey(API_KEY);
             searchCommand.setQ(query);
             searchCommand.setType("video");
             searchCommand.setFields("items(id/kind,id/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/default/url)");
@@ -99,7 +103,6 @@ public class YoutubeHelper {
                     String videoId = searchResult.getId().getVideoId();
 
                     YouTube.Videos.List videoInfoCommand = youtube.videos().list("snippet, statistics").setId(videoId);
-                    videoInfoCommand.setKey(API_KEY);
                     VideoListResponse videoInfoHelperResponse = videoInfoCommand.execute();
 
                     List<Video> videoInfoResultList = videoInfoHelperResponse.getItems();
@@ -142,7 +145,6 @@ public class YoutubeHelper {
 
         try {
             YouTube.PlaylistItems.List playlistCommand = youtube.playlistItems().list( "id,snippet" );
-            playlistCommand.setKey(API_KEY);
             playlistCommand.setFields("items(id,snippet/resourceId/videoId,snippet/title,snippet/publishedAt,snippet/thumbnails/default/url)");
             playlistCommand.setMaxResults(MAX_VIDEOS_RETURNED);
             playlistCommand.setPlaylistId(playlistId);
@@ -159,7 +161,6 @@ public class YoutubeHelper {
                     String videoId = searchResult.getSnippet().getResourceId().getVideoId();
 
                     YouTube.Videos.List videoInfoCommand = youtube.videos().list("snippet, statistics").setId(videoId);
-                    videoInfoCommand.setKey(API_KEY);
                     VideoListResponse videoInfoHelperResponse = videoInfoCommand.execute();
 
                     List<Video> videoInfoResultList = videoInfoHelperResponse.getItems();
@@ -212,7 +213,6 @@ public class YoutubeHelper {
 
         try {
             YouTube.PlaylistItems.Insert playlistItemsInsertCommand = youtube.playlistItems().insert("snippet,contentDetails", playlistItem);
-            playlistItemsInsertCommand.setKey(API_KEY);
             PlaylistItem returnedPlaylistItem = playlistItemsInsertCommand.execute();
 
             if ( returnedPlaylistItem != null ) {
@@ -233,7 +233,6 @@ public class YoutubeHelper {
 
         try {
             YouTube.Search.List searchCommand = youtube.search().list( "id,snippet" );
-            searchCommand.setKey(API_KEY);
             searchCommand.setQ(playlistName);
             searchCommand.setType("playlist");
             searchCommand.setFields("items(id/playlistId)");
