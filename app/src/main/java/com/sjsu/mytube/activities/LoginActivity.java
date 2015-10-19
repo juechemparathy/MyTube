@@ -11,6 +11,7 @@ import android.view.View.OnClickListener;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.android.gms.auth.GoogleAuthException;
 import com.google.android.gms.auth.UserRecoverableAuthException;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.Scopes;
@@ -23,6 +24,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleCredential;
 import com.google.api.client.googleapis.extensions.android.gms.auth.GoogleAccountCredential;
 import com.sjsu.mytube.R;
 
+import java.io.IOException;
 import java.util.List;
 
 public class LoginActivity extends Activity {
@@ -51,6 +53,28 @@ public class LoginActivity extends Activity {
         super.onStop();
     }
 
+    private void startStartupActivityAsync() {
+        final LoginActivity currentActivity = this;
+        final GoogleAccountCredential credentialForThread = credential;
+
+        new Thread() {
+            @Override
+            public void run() {
+                try {
+                    hasCredential = true;
+                    String token = credential.getToken();
+                    startActivity( new Intent(currentActivity,StartupActivity.class) );
+                } catch ( UserRecoverableAuthException exception) {
+                    startActivityForResult(exception.getIntent(), REQUEST_AUTHORIZATION);
+                } catch (GoogleAuthException e) {
+                    e.printStackTrace();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }.start();
+    }
+
     @Override
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
@@ -61,18 +85,7 @@ public class LoginActivity extends Activity {
                     String accountName = data.getStringExtra(AccountManager.KEY_ACCOUNT_NAME);
                     if (accountName != null) {
                         credential.setSelectedAccountName(accountName);
-
-                        try {
-                            credential.getToken();
-                        } catch ( UserRecoverableAuthException exception ) {
-                            // expected exception on 1st run with new account name
-                            startActivityForResult(exception.getIntent(), REQUEST_AUTHORIZATION);
-                        } catch ( Exception exception ) {
-                            Log.e( "LoginActivity", "onActivityResult", exception );
-                        }
-
-                        hasCredential = true;
-                        startActivity( new Intent(this,StartupActivity.class) );
+                        startStartupActivityAsync();
                     }
                 } else {
                     startActivityForResult(credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER);
@@ -81,8 +94,7 @@ public class LoginActivity extends Activity {
             case REQUEST_AUTHORIZATION:
 
                 if ( resultCode == Activity.RESULT_OK ) {
-                    hasCredential = true;
-                    startActivity(new Intent(this, StartupActivity.class));
+                    startStartupActivityAsync();
                 } else {
                     startActivityForResult( credential.newChooseAccountIntent(), REQUEST_ACCOUNT_PICKER );
                 }
