@@ -1,22 +1,22 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools" android:layout_width="match_parent"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.sjsu.mytube.fragments.SearchFragment">
+    tools:context="com.sjsu.mytube.fragments.SearchFragment"
+    android:orientation="vertical">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView android:layout_width="match_parent" android:layout_height="match_parent"
-        android:text="@string/hello_search_fragment" />
+    <SearchView
+        android:id="@+id/searchView"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@color/primary_text"
+        android:layout_gravity="center_horizontal|top"
+        />
 
     <android.support.v7.widget.RecyclerView
         android:id="@+id/videolist_rcview"
-        android:layout_width="match_parent"
+        android:layout_width="fill_parent"
         android:layout_height="543dp"
-        android:background="@color/background_floating_material_light">
+        android:background="@color/primary">
     </android.support.v7.widget.RecyclerView>
-
-    <SearchView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/searchView"
-        android:layout_gravity="center_horizontal|top"/>
-</FrameLayout>
+</LinearLayout>
